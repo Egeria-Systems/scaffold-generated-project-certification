@@ -681,7 +681,7 @@
       "path": "apps/web/package.json"
     },
     {
-      "fingerprint": "sha256:e36e7e20efa075f4738fba3d01db271c2f5387e977ea639b9ee898fbc71bb148",
+      "fingerprint": "sha256:92f8844f224b0e2b0bdc183be61e7576713f9824b070ff16462bbc928d174cc0",
       "fingerprintTarget": {
         "kind": "file"
       },
@@ -1329,7 +1329,7 @@
       "path": "apps/web/package.json"
     },
     {
-      "fingerprint": "sha256:d8e3fe18d1a4d989ae8bc12805ed29d34ba8e5f011ed75e5021cc9f3deb0f437",
+      "fingerprint": "sha256:b1031e5ed45b23175e832a97fb7867c23ad26372f66e13f1b5e935bf7a33ef71",
       "fingerprintTarget": {
         "kind": "file"
       },
