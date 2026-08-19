@@ -98,6 +98,24 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN"
           pnpm --dir apps/web exec opennextjs-cloudflare deploy
 
+      - name: Wait for deployed application
+        env:
+          DEPLOY_URL: ${{ vars.DEPLOY_URL }}
+        run: |
+          attempt=1
+          while [ "$attempt" -le 12 ]; do
+            status="$(curl --connect-timeout 5 --max-time 10 --silent --output /dev/null --write-out '%{http_code}' "$DEPLOY_URL" || true)"
+            case "$status" in
+              2??) exit 0 ;;
+            esac
+            if [ "$attempt" -eq 12 ]; then
+              echo "Deployment did not become ready" >&2
+              exit 1
+            fi
+            sleep 5
+            attempt=$((attempt + 1))
+          done
+
       - name: Test deployed application
         env:
           PLAYWRIGHT_DEPLOYED_URL: ${{ vars.DEPLOY_URL }}
