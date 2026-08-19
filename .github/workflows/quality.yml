@@ -16,6 +16,8 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble@sha256:dcc5531e97840b9b5e794f2814476b21571c5124a3fca2267d73041f56e7580e
     timeout-minutes: 30
     steps:
       - name: Check out repository
@@ -53,7 +55,7 @@ jobs:
         run: pnpm --dir apps/web exec opennextjs-cloudflare build --skipNextBuild
 
       - name: Install Chromium
-        run: pnpm --dir apps/web run browser:install:ci
+        run: pnpm --dir apps/web exec playwright install chromium
 
       - name: Test Next.js development
         run: pnpm --dir apps/web run test:e2e:dev
