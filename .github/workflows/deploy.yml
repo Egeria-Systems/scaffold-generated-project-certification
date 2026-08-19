@@ -1,0 +1,113 @@
+name: Deploy production
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_revision:
+        description: Exact main revision approved for deployment
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  queue: max
+  cancel-in-progress: false
+
+jobs:
+  verify-and-deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: production
+      url: ${{ vars.DEPLOY_URL }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up pnpm and Node.js
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2
+        with:
+          version: 11.20.0
+          runtime: node@22.23.2
+          cache: false
+          install: false
+
+      - name: Verify approved revision
+        env:
+          EXPECTED_REVISION: ${{ inputs.expected_revision }}
+        run: |
+          [[ "${#EXPECTED_REVISION}" -eq 40 ]] || exit 1
+          case "$EXPECTED_REVISION" in
+            *[!0123456789abcdef]*) exit 1 ;;
+          esac
+          [[ "$GITHUB_REF" == "refs/heads/main" ]] || exit 1
+          [[ "$GITHUB_SHA" == "$EXPECTED_REVISION" ]] || exit 1
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint generated project
+        run: pnpm run lint
+
+      - name: Typecheck generated project
+        run: pnpm run typecheck
+
+      - name: Test generated unit behavior
+        run: pnpm run test:unit
+
+      - name: Test generated components
+        run: pnpm run test:component
+
+      - name: Build Next.js application
+        run: pnpm run build
+
+      - name: Build OpenNext application
+        run: pnpm --dir apps/web exec opennextjs-cloudflare build --skipNextBuild
+
+      - name: Install Chromium
+        run: pnpm --dir apps/web run browser:install:ci
+
+      - name: Test Next.js development
+        run: pnpm --dir apps/web run test:e2e:dev
+
+      - name: Test OpenNext workerd preview
+        run: pnpm --dir apps/web run test:e2e:preview
+
+      - name: Verify deployment target configured
+        env:
+          PLAYWRIGHT_DEPLOYED_URL: ${{ vars.DEPLOY_URL }}
+        run: pnpm --dir apps/web exec playwright test --config playwright.deployed.config.ts --list
+
+      - name: Deploy Cloudflare Worker
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          pnpm --dir apps/web exec opennextjs-cloudflare deploy
+
+      - name: Test deployed application
+        env:
+          PLAYWRIGHT_DEPLOYED_URL: ${{ vars.DEPLOY_URL }}
+        run: pnpm --dir apps/web run test:e2e:deployed
+
+      - name: Upload deployment browser failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: deployment-browser-failure-artifacts
+          path: |
+            apps/web/playwright-report/
+            apps/web/test-results/
+          if-no-files-found: ignore
+          include-hidden-files: false
+          retention-days: 7

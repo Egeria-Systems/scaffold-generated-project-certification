@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+  --design-color-canvas: #f6f5ef;
+  --design-color-surface: #ffffff;
+  --design-color-ink: #17211f;
+  --design-color-muted: #52605c;
+  --design-color-accent: #0b6959;
+  --design-color-accent-hover: #075346;
+  --design-color-accent-contrast: #ffffff;
+  --design-color-focus: #b45309;
+  --design-color-line: #c5cfca;
+}
+
+@theme inline {
+  --color-canvas: var(--design-color-canvas);
+  --color-surface: var(--design-color-surface);
+  --color-ink: var(--design-color-ink);
+  --color-muted: var(--design-color-muted);
+  --color-accent: var(--design-color-accent);
+  --color-accent-hover: var(--design-color-accent-hover);
+  --color-accent-contrast: var(--design-color-accent-contrast);
+  --color-focus: var(--design-color-focus);
+  --color-line: var(--design-color-line);
+  --font-sans: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--design-color-canvas);
+  color: var(--design-color-ink);
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+p,
+a {
+  overflow-wrap: anywhere;
+}
+
+:focus-visible {
+  box-shadow: 0 0 0 0.2rem var(--design-color-canvas);
+  outline: 0.2rem solid var(--design-color-focus);
+  outline-offset: 0.2rem;
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    box-shadow: none;
+    outline-color: Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "acme-generated-project",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "pnpm --dir apps/web run build",
+    "build:cloudflare": "pnpm --dir apps/web run build:cloudflare",
+    "dev": "pnpm --dir apps/web run dev",
+    "lint": "pnpm --dir apps/web run lint",
+    "test": "pnpm --dir apps/web run test",
+    "test:component": "pnpm --dir apps/web run test:component",
+    "test:component:watch": "pnpm --dir apps/web run test:component:watch",
+    "test:unit": "pnpm --dir apps/web run test:unit",
+    "test:unit:watch": "pnpm --dir apps/web run test:unit:watch",
+    "test:watch": "pnpm --dir apps/web run test:watch",
+    "typecheck": "pnpm --dir apps/web run typecheck",
+    "verify": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build && pnpm --dir apps/web exec opennextjs-cloudflare build --skipNextBuild"
+  },
+  "engines": {
+    "node": "22.23.2",
+    "pnpm": "11.20.0"
+  },
+  "packageManager": "pnpm@11.20.0",
+  "volta": {
+    "node": "22.23.2"
+  }
+}

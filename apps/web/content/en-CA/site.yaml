@@ -1,0 +1,41 @@
+metadata:
+  title: "Acme Generated Project"
+  description: A focused portfolio.
+accessibility:
+  skipToContent: Skip to content
+home:
+  sections:
+    - id: introduction
+      type: hero
+      variant: default
+      enabled: true
+      content:
+        heading: "Acme Generated Project"
+        summary: A concise introduction to selected work.
+    - id: approach
+      type: text
+      variant: default
+      enabled: true
+      content:
+        heading: Approach
+        body: Thoughtful work begins with clear goals and practical decisions.
+    - id: selected-work
+      type: project-list
+      variant: default
+      enabled: true
+      content:
+        heading: Selected work
+        projects:
+          - title: Example project
+            summary: A representative project demonstrating focused delivery.
+            href: https://example.com/work/example-project
+    - id: contact
+      type: call-to-action
+      variant: default
+      enabled: true
+      content:
+        heading: Start a conversation
+        summary: Share the goals and constraints shaping your next project.
+        label: Send an email
+        href: mailto:hello@example.com
+navigation: []
